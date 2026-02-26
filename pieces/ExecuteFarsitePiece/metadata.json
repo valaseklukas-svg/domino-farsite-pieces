@@ -11,6 +11,7 @@
   },
   "runtime": {
     "type": "docker",
-    "image": "farsite:rocky8"
+    "image": "ghcr.io/valaseklukas-svg/farsite:rocky8"
   }
 }
+
