@@ -1,0 +1,112 @@
+{
+    "ExecuteFarsitePiece": {
+        "name": "ExecuteFarsitePiece",
+        "dependency": {
+            "dockerfile": null,
+            "requirements_file": null
+        },
+        "tags": [],
+        "style": {
+            "node_label": "Piece",
+            "node_type": "default",
+            "node_style": {
+                "backgroundColor": "#ebebeb"
+            },
+            "useIcon": true,
+            "icon_class_name": "fa-solid fa-circle",
+            "iconStyle": {
+                "cursor": "pointer"
+            }
+        },
+        "label": "Execute FARSITE (TestFARSITE wrapper)",
+        "description": "Runs FARSITE via /usr/local/bin/run_farsite.sh. Copies inputs to /work, executes, and returns a ZIP of outputs + runner log.",
+        "version": "0.1.0",
+        "authors": [
+            "IISAS / Domino-Farsite"
+        ],
+        "resources": {
+            "cpu": 2,
+            "memory": "8Gi",
+            "disk": "10Gi"
+        },
+        "runtime": {
+            "type": "docker",
+            "image": "farsite:rocky8"
+        },
+        "input_schema": {
+            "description": "ExecuteFarsitePiece Input Model",
+            "properties": {
+                "lcp_path": {
+                    "description": "Path to .lcp landscape file",
+                    "title": "Lcp Path",
+                    "type": "string"
+                },
+                "inputs_path": {
+                    "description": "Path to FARSITE inputs file (*.input, ASCII format)",
+                    "title": "Inputs Path",
+                    "type": "string"
+                },
+                "ignition_shp_path": {
+                    "description": "Path to ignition shapefile (.shp)",
+                    "title": "Ignition Shp Path",
+                    "type": "string"
+                },
+                "barrier_shp_path": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": "0",
+                    "description": "Path to barrier shapefile (.shp) or '0' for no barrier",
+                    "title": "Barrier Shp Path"
+                },
+                "output_basename": {
+                    "default": "farsite_run",
+                    "description": "Base name for outputs (no extension). Outputs will be written under /work/out/<output_basename>_*",
+                    "title": "Output Basename",
+                    "type": "string"
+                },
+                "outputs_type": {
+                    "default": 1,
+                    "description": "0=both, 1=ASCII grid (recommended baseline), 2=FlamMap binary grid",
+                    "title": "Outputs Type",
+                    "type": "integer"
+                }
+            },
+            "required": [
+                "lcp_path",
+                "inputs_path",
+                "ignition_shp_path"
+            ],
+            "title": "InputModel",
+            "type": "object"
+        },
+        "output_schema": {
+            "description": "ExecuteFarsitePiece Output Model",
+            "properties": {
+                "outputs_zip_path": {
+                    "description": "ZIP archive containing all output files under /work/out",
+                    "title": "Outputs Zip Path",
+                    "type": "string"
+                },
+                "runner_log_path": {
+                    "description": "Runner log path produced by run_farsite.sh (or fallback log)",
+                    "title": "Runner Log Path",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "outputs_zip_path",
+                "runner_log_path"
+            ],
+            "title": "OutputModel",
+            "type": "object"
+        },
+        "secrets_schema": null,
+        "source_url": "https://github.com/valaseklukas-svg/domino-farsite-pieces/tree/main/pieces/ExecuteFarsitePiece"
+    }
+}

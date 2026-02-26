@@ -1,0 +1,13 @@
+{
+    "group0": {
+        "dependency": {
+            "dockerfile": null,
+            "requirements_file": null
+        },
+        "pieces": [
+            "ExecuteFarsitePiece"
+        ],
+        "secrets": [],
+        "source_image": "ghcr.io/valaseklukas-svg/domino-farsite-pieces:0.1.1-group0"
+    }
+}
