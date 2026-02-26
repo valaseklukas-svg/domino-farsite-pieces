@@ -1,6 +1,6 @@
 [repository]
 
-REGISTRY_NAME = "lukasvalasek"
+REGISTRY_NAME = "valaseklukas-svg"
 REPOSITORY_NAME = "domino-farsite-pieces"
 REPOSITORY_LABEL = "Domino Farsite Pieces"
 
