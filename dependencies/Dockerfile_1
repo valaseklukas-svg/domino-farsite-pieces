@@ -1,13 +1,10 @@
 FROM ghcr.io/valaseklukas-svg/farsite:rocky8 as farsite
-
 FROM ghcr.io/iisas/domino-base-piece:latest
 
-# --- bring FARSITE runtime into the Domino piece image ---
 COPY --from=farsite /usr/local/bin/TestFARSITE /usr/local/bin/TestFARSITE
 COPY --from=farsite /usr/local/bin/run_farsite.sh /usr/local/bin/run_farsite.sh
 RUN chmod +x /usr/local/bin/TestFARSITE /usr/local/bin/run_farsite.sh
 
-# Need to copy pieces source code
 COPY config.toml domino/pieces_repository/
 COPY pieces domino/pieces_repository/pieces
 COPY .domino domino/pieces_repository/.domino
