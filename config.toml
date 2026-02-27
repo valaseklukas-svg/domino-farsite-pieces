@@ -1,7 +1,10 @@
 [repository]
-
 REGISTRY_NAME = "valaseklukas-svg"
 REPOSITORY_NAME = "domino-farsite-pieces"
 REPOSITORY_LABEL = "Domino Farsite Pieces"
+
+[group0.dependency]
+dockerfile_path = "dependencies/Dockerfile_1"
+requirements_path = "dependencies/requirements_0.txt"
 
 VERSION = "0.1.10"
