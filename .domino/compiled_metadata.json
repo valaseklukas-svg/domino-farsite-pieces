@@ -31,7 +31,7 @@
         },
         "runtime": {
             "type": "docker",
-            "image": "ghcr.io/valaseklukas-svg/farsite:rocky8"
+            "image": "ghcr.io/valaseklukas-svg/domino-farsite-pieces:<verzia>-group0"
         },
         "input_schema": {
             "description": "ExecuteFarsitePiece Input Model",
