@@ -1,3 +1,5 @@
+FROM ghcr.io/valaseklukas-svg/farsite:rocky8 as farsite
+
 FROM ghcr.io/iisas/domino-base-piece:latest
 # Install specific requirements to run ShellExecute Piece
 # RUN apt-get update
