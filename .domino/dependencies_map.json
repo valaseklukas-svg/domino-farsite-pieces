@@ -8,6 +8,6 @@
             "ExecuteFarsitePiece"
         ],
         "secrets": [],
-        "source_image": "ghcr.io/valaseklukas-svg/domino-farsite-pieces:0.1.5-group0"
+        "source_image": "ghcr.io/valaseklukas-svg/domino-farsite-pieces:0.1.6-group0"
     }
 }
