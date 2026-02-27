@@ -3,4 +3,4 @@ REGISTRY_NAME = "valaseklukas-svg"
 REPOSITORY_NAME = "domino-farsite-pieces"
 REPOSITORY_LABEL = "Domino Farsite Pieces"
 
-VERSION = "0.1.10"
+VERSION = "0.1.11"
