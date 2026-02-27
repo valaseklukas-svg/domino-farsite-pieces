@@ -1,0 +1,9 @@
+FROM ghcr.io/iisas/domino-base-piece:latest
+
+COPY config.toml domino/pieces_repository/
+COPY pieces domino/pieces_repository/pieces
+COPY .domino domino/pieces_repository/.domino
+
+# voliteľne: ak chceš pip balíky:
+# COPY dependencies/requirements_0.txt /tmp/requirements_0.txt
+# RUN pip install --no-cache-dir -r /tmp/requirements_0.txt
