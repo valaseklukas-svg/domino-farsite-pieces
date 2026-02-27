@@ -11,7 +11,7 @@ FARSITE_MINIMUM_SPOT_DISTANCE: 2
 FARSITE_ACCELERATION_ON: 1
 FARSITE_FILL_BARRIERS: 0
 
-CUSTOM_FUELS_FILE: /work/farsite/examples/zavada/input/PM_Zavada.FMD
+CUSTOM_FUELS_FILE: /home/domino/pieces_repository/pieces/ExecuteFarsitePiece/assets/test/PM_Zavada.FMD
 
 FARSITE_BURN_PERIODS: 2
 08 01 0000 2359
@@ -197,3 +197,4 @@ RAWS: 168
 
 FOLIAR_MOISTURE_CONTENT: 100
 CROWN_FIRE_METHOD: Finney
+
