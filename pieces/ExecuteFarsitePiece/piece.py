@@ -67,7 +67,8 @@ class ExecuteFarsitePiece(BasePiece):
         if input_data.barrier_shp_path and input_data.barrier_shp_path != "0":
             barrier_arg = self._copy_shapefile_set(input_data.barrier_shp_path, in_dir)
 
-        output_base = os.path.join(out_dir, input_data.output_basename)
+        #output_base = os.path.join(out_dir, input_data.output_basename)
+        output_base = /work/out/run1
         wrapper = "/usr/local/bin/run_farsite.sh"
 
         cmd = [
@@ -117,4 +118,5 @@ class ExecuteFarsitePiece(BasePiece):
             outputs_zip_path=zip_path,
             runner_log_path=runner_log_path,
         )
+
 
