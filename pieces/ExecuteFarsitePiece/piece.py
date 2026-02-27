@@ -4,7 +4,7 @@ import subprocess
 import glob
 from pathlib import Path
 
-from domino_base_piece import BasePiece
+from domino.base_piece import BasePiece
 from .models import InputModel, OutputModel
 
 
@@ -117,3 +117,4 @@ class ExecuteFarsitePiece(BasePiece):
             outputs_zip_path=zip_path,
             runner_log_path=runner_log_path,
         )
+
