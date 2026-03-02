@@ -9,13 +9,13 @@
             "Farsite"
         ],
         "style": {
-            "node_label": "Piece",
+            "node_label": "Main piece (run Farsite)",
             "node_type": "default",
             "node_style": {
                 "backgroundColor": "#ebebeb"
             },
             "useIcon": true,
-            "icon_class_name": "fa-solid fa-circle",
+            "icon_class_name": "fa-solid:fire",
             "iconStyle": {
                 "cursor": "pointer"
             }
@@ -124,13 +124,13 @@
             "farsite"
         ],
         "style": {
-            "node_label": "Piece",
+            "node_label": "Create Shapefile (GPS location)",
             "node_type": "default",
             "node_style": {
                 "backgroundColor": "#ebebeb"
             },
             "useIcon": true,
-            "icon_class_name": "fa-solid fa-circle",
+            "icon_class_name": "fa-solid:location-dot",
             "iconStyle": {
                 "cursor": "pointer"
             }

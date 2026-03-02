@@ -8,7 +8,7 @@
             "ExecuteFarsitePiece"
         ],
         "secrets": [],
-        "source_image": "ghcr.io/valaseklukas-svg/domino-farsite-pieces:0.1.23-group0"
+        "source_image": "ghcr.io/valaseklukas-svg/domino-farsite-pieces:0.1.24-group0"
     },
     "group1": {
         "dependency": {
@@ -19,6 +19,6 @@
             "CreateIgnitionPiece"
         ],
         "secrets": [],
-        "source_image": "ghcr.io/valaseklukas-svg/domino-farsite-pieces:0.1.23-group1"
+        "source_image": "ghcr.io/valaseklukas-svg/domino-farsite-pieces:0.1.24-group1"
     }
 }
