@@ -1,7 +1,7 @@
 {
   "name": "ExecuteFarsitePiece",
   "label": "Execute FARSITE (TestFARSITE wrapper)",
-  "description": "Runs FARSITE via /usr/local/bin/run_farsite.sh.",
+  "description": "Runs FARSITE via /usr/local/bin/run_farsite.sh. Copies inputs to /work, executes, and returns a ZIP of outputs + runner log.",
   "version": "0.1.0",
   "authors": ["IISAS / Domino-Farsite"],
   "resources": {
@@ -11,8 +11,6 @@
   },
   "runtime": {
     "type": "docker",
-    "image": "ghcr.io/valaseklukas-svg/domino-farsite-pieces:<verzia>-group1"
+    "image": "ghcr.io/valaseklukas-svg/domino-farsite-pieces:<verzia>-group1" 
   }
 }
-
-
