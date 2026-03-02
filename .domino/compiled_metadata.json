@@ -115,7 +115,7 @@
     "CreateIgnitionPiece": {
         "name": "CreateIgnitionPiece",
         "dependency": {
-            "dockerfile": null,
+            "dockerfile": "Dockerfile_1",
             "requirements_file": null
         },
         "tags": [
