@@ -9,6 +9,6 @@
             "CreateIgnitionPiece"
         ],
         "secrets": [],
-        "source_image": "ghcr.io/valaseklukas-svg/domino-farsite-pieces:0.1.25-group0"
+        "source_image": "ghcr.io/valaseklukas-svg/domino-farsite-pieces:0.1.26-group0"
     }
 }
