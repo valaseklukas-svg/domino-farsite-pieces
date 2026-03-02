@@ -3,6 +3,9 @@
   "description": "Vytvorí fiktívny bodový Shapefile (.shp) pre inicializáciu FARSITE.",
   "version": "0.1.0",
   "type": "piece",
+  "dependency": {
+      "dockerfile": "Dockerfile_1"
+  },
   "categories": ["Data Preparation", "GIS"],
   "tags": ["shapefile", "gps", "farsite"],
   "style": {
