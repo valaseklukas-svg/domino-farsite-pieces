@@ -4,7 +4,7 @@ from fiona.crs import from_epsg
 from domino.base_piece import BasePiece
 from .models import InputModel, OutputModel
 
-class CreateIgnitionShapefilePiece(BasePiece):
+class CreateIgnitionPiece(BasePiece)::
     
     def piece_function(self, input_data: InputModel):
         self.logger.info(f"Spúšťam FIKTÍVNE generovanie pre vstup: {input_data.gps_text}")
@@ -45,4 +45,5 @@ class CreateIgnitionShapefilePiece(BasePiece):
             raise RuntimeError(f"Zlyhalo generovanie mock súboru: {e}")
 
         # Odovzdáme cestu ako výstup do ďalšieho kroku (Farsite)
+
         return OutputModel(ignition_shp_path=output_filename)
