@@ -4,7 +4,7 @@ from fiona.crs import from_epsg
 from domino.base_piece import BasePiece
 from .models import InputModel, OutputModel
 
-class CreateIgnitionPiece(BasePiece)::
+class CreateIgnitionPiece(BasePiece):
     
     def piece_function(self, input_data: InputModel):
         self.logger.info(f"Spúšťam FIKTÍVNE generovanie pre vstup: {input_data.gps_text}")
@@ -47,3 +47,4 @@ class CreateIgnitionPiece(BasePiece)::
         # Odovzdáme cestu ako výstup do ďalšieho kroku (Farsite)
 
         return OutputModel(ignition_shp_path=output_filename)
+
