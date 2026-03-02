@@ -17,5 +17,10 @@
           "memory": 512
       }
   },
-  "tags": ["Farsite"]
+  
+  "tags": ["Farsite"],
+  "style": {
+    "node_label": "Main piece (run Farsite)",
+    "icon_class_name": "fa-solid:fire"
+  }
 }
