@@ -4,14 +4,18 @@
   "description": "Runs FARSITE via /usr/local/bin/run_farsite.sh. Copies inputs to /work, executes, and returns a ZIP of outputs + runner log.",
   "version": "0.1.0",
   "authors": ["IISAS / Domino-Farsite"],
-  "resources": {
-    "cpu": 2,
-    "memory": "8Gi",
-    "disk": "10Gi"
+  "dependency": {
+      "dockerfile": "Dockerfile_1"
   },
-  "runtime": {
-    "type": "docker",
-    "image": "ghcr.io/valaseklukas-svg/domino-farsite-pieces:<verzia>-group1",
-    "source_image": "ghcr.io/valaseklukas-svg/farsite:rocky8" 
-  }
+  "container_resources": {
+      "requests": {
+          "cpu": 100,
+          "memory": 128
+      },
+      "limits": {
+          "cpu": 500,
+          "memory": 512
+      }
+  },
+  "tags": ["Farsite"]
 }
