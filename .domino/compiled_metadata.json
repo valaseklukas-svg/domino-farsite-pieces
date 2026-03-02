@@ -31,8 +31,7 @@
         },
         "runtime": {
             "type": "docker",
-            "image": "ghcr.io/valaseklukas-svg/domino-farsite-pieces:<verzia>-group0",
-            "dockerfile": "../../dependencies/Dockerfile_1"
+            "image": "ghcr.io/valaseklukas-svg/domino-farsite-pieces:<verzia>-group0"
         },
         "input_schema": {
             "description": "ExecuteFarsitePiece Input Model",
