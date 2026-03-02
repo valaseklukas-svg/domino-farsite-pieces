@@ -1,6 +1,6 @@
 {
-  "name": "Create Ignition Shapefile",
-  "description": "Vytvorí fiktívny bodový Shapefile (.shp) pre inicializáciu FARSITE na základe zadaných GPS súradníc.",
+  "name": "CreateIgnitionPiece",
+  "description": "Vytvorí fiktívny bodový Shapefile (.shp) pre inicializáciu FARSITE.",
   "version": "0.1.0",
   "type": "piece",
   "categories": ["Data Preparation", "GIS"],
