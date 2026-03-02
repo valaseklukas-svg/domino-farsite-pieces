@@ -9,6 +9,10 @@ from .models import InputModel, OutputModel
 
 
 class ExecuteFarsitePiece(BasePiece):
+    """
+    Runs FARSITE via /usr/local/bin/run_farsite.sh inside the configured runtime image.
+    """
+
     def _ensure_dir(self, p: str) -> None:
         os.makedirs(p, exist_ok=True)
 
@@ -36,38 +40,22 @@ class ExecuteFarsitePiece(BasePiece):
 
     def piece_function(self, input_data: InputModel):
         work_root = "/work"
-        in_dir = os.path.join(work_root, "test")
+        in_dir = os.path.join(work_root, "in")
         out_dir = os.path.join(work_root, "out")
 
         self._ensure_dir(in_dir)
         self._ensure_dir(out_dir)
 
-        self.logger.info("=== STAHUJEM TESTOVACIE DATA Z GITHUB ===")
-        import urllib.request
-        
-        # Zoznam suborov, ktore treba stiahnut z tvojho GitHubu (raw obsah)
-        base_url = "https://raw.githubusercontent.com/valaseklukas-svg/domino-farsite-pieces/main/pieces/ExecuteFarsitePiece/assets/test/"
-        
-        files_to_download = ["final.lcp", "Zavada.input", "ignition.shp", "ignition.dbf", "ignition.shx", "ignition.prj"]
-        
-        for filename in files_to_download:
-            url = base_url + filename
-            dest_path = os.path.join(in_dir, filename)
-            self.logger.info(f"Stahujem {filename} do {dest_path}")
-            try:
-                urllib.request.urlretrieve(url, dest_path)
-            except Exception as e:
-                self.logger.error(f"Nepodarilo sa stiahnut {filename}: {e}")
+        self.logger.info("Copying inputs to /work/in")
 
-        # Ostatok tvojho kodu ostava takmer rovnaky, len prisposobime argumnety...
-        # lcp_local, inputs_local, ignition_local už nie je potrebné kopírovať z "input_data", 
-        # rovno im priradíme tie cesty, kam sme to práve stiahli.
+        lcp_local = self._copy_file(input_data.lcp_path, in_dir)
+        inputs_local = self._copy_file(input_data.inputs_path, in_dir)
+        ignition_local = self._copy_shapefile_set(input_data.ignition_shp_path, in_dir)
 
-        lcp_local = os.path.join(in_dir, "final.lcp")
-        inputs_local = os.path.join(in_dir, "Zavada.input")
-        ignition_local = os.path.join(in_dir, "ignition.shp")
         barrier_arg = "0"
-        
+        if input_data.barrier_shp_path and input_data.barrier_shp_path != "0":
+            barrier_arg = self._copy_shapefile_set(input_data.barrier_shp_path, in_dir)
+
         output_base = os.path.join(out_dir, input_data.output_basename)
         wrapper = "/usr/local/bin/run_farsite.sh"
 
@@ -81,7 +69,7 @@ class ExecuteFarsitePiece(BasePiece):
             str(int(input_data.outputs_type)),
         ]
 
-        self.logger.info("Spustam FARSITE: %s", " ".join(cmd))
+        self.logger.info("Running wrapper: %s", " ".join(cmd))
 
         proc = subprocess.run(
             cmd,
@@ -98,6 +86,7 @@ class ExecuteFarsitePiece(BasePiece):
         runner_log = f"{output_base}_runner.log"
         runner_log_path = runner_log if os.path.exists(runner_log) else fallback_log
 
+        # --- VYPISANIE LOGU DO AIRFLOW (aby si videl, ci to islo) ---
         self.logger.info("=== FARSITE LOG VYPIS ===")
         if os.path.exists(runner_log_path):
             with open(runner_log_path, 'r', encoding='utf-8') as log_file:
@@ -107,10 +96,19 @@ class ExecuteFarsitePiece(BasePiece):
         self.logger.info("==========================")
 
         if proc.returncode != 0:
-            raise RuntimeError(f"FARSITE spadol (rc={proc.returncode}).")
+            self.logger.error("FARSITE failed. Return code=%s", proc.returncode)
+            self.logger.error("See logs: %s and %s", runner_log, fallback_log)
+            raise RuntimeError(
+                f"FARSITE run failed (rc={proc.returncode}). "
+                f"See logs: {runner_log_path} (and {fallback_log})."
+            )
 
+        # Zip outputs
         zip_base = os.path.join(work_root, input_data.output_basename + "_outputs")
         zip_path = shutil.make_archive(zip_base, "zip", out_dir)
+
+        self.logger.info("Outputs zipped locally: %s", zip_path)
+        self.logger.info("Runner log: %s", runner_log_path)
 
         return OutputModel(
             outputs_zip_path=zip_path,
