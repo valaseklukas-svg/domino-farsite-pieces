@@ -11,7 +11,8 @@
   },
   "runtime": {
     "type": "docker",
-    "image": "ghcr.io/valaseklukas-svg/domino-farsite-pieces:<verzia>-group0" 
+    "image": "ghcr.io/valaseklukas-svg/domino-farsite-pieces:<verzia>-group1"
   }
 }
+
 
