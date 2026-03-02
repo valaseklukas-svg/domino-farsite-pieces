@@ -111,5 +111,66 @@
         },
         "secrets_schema": null,
         "source_url": "https://github.com/valaseklukas-svg/domino-farsite-pieces/tree/main/pieces/ExecuteFarsitePiece"
+    },
+    "CreateIgnitionPiece": {
+        "name": "CreateIgnitionPiece",
+        "dependency": {
+            "dockerfile": null,
+            "requirements_file": null
+        },
+        "tags": [
+            "shapefile",
+            "gps",
+            "farsite"
+        ],
+        "style": {
+            "node_label": "Piece",
+            "node_type": "default",
+            "node_style": {
+                "backgroundColor": "#ebebeb"
+            },
+            "useIcon": true,
+            "icon_class_name": "fa-solid fa-circle",
+            "iconStyle": {
+                "cursor": "pointer"
+            }
+        },
+        "description": "Vytvor\u00ed fikt\u00edvny bodov\u00fd Shapefile (.shp) pre inicializ\u00e1ciu FARSITE.",
+        "version": "0.1.0",
+        "type": "piece",
+        "categories": [
+            "Data Preparation",
+            "GIS"
+        ],
+        "input_schema": {
+            "description": "Input model pre fikt\u00edvne generovanie Ignition Shapefile",
+            "properties": {
+                "gps_text": {
+                    "default": "48.1486, 17.1077",
+                    "description": "Fikt\u00edvne GPS s\u00faradnice na otestovanie workflowu (Lat, Lon)",
+                    "title": "Gps Text",
+                    "type": "string"
+                }
+            },
+            "title": "InputModel",
+            "type": "object"
+        },
+        "output_schema": {
+            "description": "Output model pre fikt\u00edvne generovanie Ignition Shapefile",
+            "properties": {
+                "ignition_shp_path": {
+                    "description": "Cesta k vygenerovan\u00e9mu (fikt\u00edvnemu) ignition shapefile (.shp)",
+                    "title": "Ignition Shp Path",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "ignition_shp_path"
+            ],
+            "title": "OutputModel",
+            "type": "object"
+        },
+        "secrets_schema": null,
+        "source_url": "https://github.com/valaseklukas-svg/domino-farsite-pieces/tree/main/pieces/CreateIgnitionPiece"
     }
 }
