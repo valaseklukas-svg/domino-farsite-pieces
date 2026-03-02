@@ -9,8 +9,10 @@ RUN chmod +x /usr/local/bin/TestFARSITE /usr/local/bin/run_farsite.sh
 
 # --- embedded smoke-test inputs (no shared storage needed) ---
 RUN mkdir -p /work/test && chmod -R 777 /work
+
 COPY pieces/ExecuteFarsitePiece/assets/test/ /work/test/
-RUN ls -la /work/test
+
+RUN echo "Vypis zlozky /work/test po kopirovani:" && ls -la /work/test
 
 COPY config.toml domino/pieces_repository/
 COPY pieces domino/pieces_repository/pieces
