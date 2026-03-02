@@ -3,6 +3,12 @@ FROM ghcr.io/iisas/domino-base-piece:latest
 
 RUN pip install --no-cache-dir domino-py-iisas
 
+# PRIDANÉ RIADKY:
+COPY dependencies/requirements_1.txt /tmp/requirements_1.txt
+RUN pip install --no-cache-dir -r /tmp/requirements_1.txt
+#-----
+
+
 COPY --from=farsite /usr/local/bin/TestFARSITE /usr/local/bin/TestFARSITE
 COPY --from=farsite /usr/local/bin/run_farsite.sh /usr/local/bin/run_farsite.sh
 RUN chmod +x /usr/local/bin/TestFARSITE /usr/local/bin/run_farsite.sh
