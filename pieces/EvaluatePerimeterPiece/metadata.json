@@ -1,8 +1,8 @@
 {
   "name": "EvaluatePerimeterPiece",
-  "label": "Evaluate Perimeter & API Alert",
-  "description": "Vyhodnotie prieniku perimetra poziaru z FARSITE s ochrannym buffrom, vypocita cas do zasiahnutia a odosle alarm (ok/moderate/warning/critical) na Dicris API.",
+  "description": "Vyhodnotenie prieniku perimetra poziaru z FARSITE s ochrannym buffrom, vypocita cas do zasiahnutia a odosle alarm na Dicris API.",
   "version": "0.1.0",
+  "type": "piece",
   "authors": ["IISAS / Domino-Farsite"],
   "resources": {
     "cpu": 1,
@@ -15,5 +15,11 @@
   "runtime": {
     "type": "docker",
     "image": "ghcr.io/valaseklukas-svg/domino-farsite-pieces:<verzia>-group0"
+  },
+  "categories": ["Analytics", "GIS"],
+  "tags": ["perimeter", "alert", "farsite", "api"],
+  "style": {
+    "node_label": "Evaluate & Alert",
+    "icon_class_name": "fa-solid:bell"
   }
 }
