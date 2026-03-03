@@ -1,6 +1,6 @@
 {
   "name": "CreateIgnitionPiece",
-  "description": "Vytvorí fiktívny bodový Shapefile (.shp) pre inicializáciu FARSITE.",
+  "description": "Vytvori fiktivny bodovy Shapefile (.shp) pre inicializaciu FARSITE.",
   "version": "0.1.0",
   "type": "piece",
   "dependency": {
@@ -13,3 +13,4 @@
     "icon_class_name": "fa-solid:location-dot"
   }
 }
+
