@@ -10,7 +10,7 @@ from .models import InputModel, OutputModel
 
 class ExecuteFarsitePiece(BasePiece):
     """
-    Runs FARSITE via /usr/local/bin/run_farsite.sh inside the configured runtime image.
+    Runs FARSITE via /usr/local/bin/run_farsite.sh on Domino Shared Storage.
     """
 
     def _ensure_dir(self, p: str) -> None:
@@ -39,14 +39,15 @@ class ExecuteFarsitePiece(BasePiece):
         return os.path.join(dst_dir, shp.name)
 
     def piece_function(self, input_data: InputModel):
-        work_root = "/work"
+        # TOTO JE KLÚČOVÁ ZMENA: Pracujeme priamo v pridelenej zložke na Shared Storage
+        work_root = self.results_path 
         in_dir = os.path.join(work_root, "in")
         out_dir = os.path.join(work_root, "out")
 
         self._ensure_dir(in_dir)
         self._ensure_dir(out_dir)
 
-        self.logger.info("Copying inputs to /work/in")
+        self.logger.info("Kopirovanie vstupov zo zdielaneho disku do pracovnej zlozky behu: %s", in_dir)
 
         lcp_local = self._copy_file(input_data.lcp_path, in_dir)
         inputs_local = self._copy_file(input_data.inputs_path, in_dir)
@@ -69,7 +70,7 @@ class ExecuteFarsitePiece(BasePiece):
             str(int(input_data.outputs_type)),
         ]
 
-        self.logger.info("Running wrapper: %s", " ".join(cmd))
+        self.logger.info("Spustam FARSITE: %s", " ".join(cmd))
 
         proc = subprocess.run(
             cmd,
@@ -86,7 +87,7 @@ class ExecuteFarsitePiece(BasePiece):
         runner_log = f"{output_base}_runner.log"
         runner_log_path = runner_log if os.path.exists(runner_log) else fallback_log
 
-        # --- VYPISANIE LOGU DO AIRFLOW (aby si videl, ci to islo) ---
+        # Log si ponecháme aj vo výpise Airflow pre rýchlu kontrolu
         self.logger.info("=== FARSITE LOG VYPIS ===")
         if os.path.exists(runner_log_path):
             with open(runner_log_path, 'r', encoding='utf-8') as log_file:
@@ -107,8 +108,13 @@ class ExecuteFarsitePiece(BasePiece):
         zip_base = os.path.join(work_root, input_data.output_basename + "_outputs")
         zip_path = shutil.make_archive(zip_base, "zip", out_dir)
 
-        self.logger.info("Outputs zipped locally: %s", zip_path)
-        self.logger.info("Runner log: %s", runner_log_path)
+        self.logger.info("Outputs uspesne ulozene na Shared Storage do: %s", zip_path)
+
+        # (Voliteľné) Vytvorenie odkazu, aby sa dal zip stiahnuť priamo z GUI Domina
+        self.display_result = {
+            "file_type": "zip",
+            "file_path": zip_path
+        }
 
         return OutputModel(
             outputs_zip_path=zip_path,
