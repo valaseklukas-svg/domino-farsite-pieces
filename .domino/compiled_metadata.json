@@ -143,13 +143,28 @@
             "GIS"
         ],
         "input_schema": {
+            "$defs": {
+                "EpsgCode": {
+                    "enum": [
+                        "4326",
+                        "5514"
+                    ],
+                    "title": "EpsgCode",
+                    "type": "string"
+                }
+            },
             "description": "Input model pre fikt\u00edvne generovanie Ignition Shapefile",
             "properties": {
                 "gps_text": {
-                    "default": "48.1486, 17.1077",
-                    "description": "Fikt\u00edvne GPS s\u00faradnice na otestovanie workflowu (Lat, Lon)",
+                    "default": "17.1077, 48.1486",
+                    "description": "S\u00faradnice oddelen\u00e9 \u010diarkou vo form\u00e1te X, Y (Lon, Lat pre WGS84 alebo V\u00fdchod, Sever pre S-JTSK).",
                     "title": "Gps Text",
                     "type": "string"
+                },
+                "epsg_code": {
+                    "$ref": "#/$defs/EpsgCode",
+                    "default": "4326",
+                    "description": "S\u00faradnicov\u00fd syst\u00e9m (EPSG k\u00f3d) pre vygenerovan\u00fd shapefile."
                 }
             },
             "title": "InputModel",
