@@ -28,7 +28,7 @@ class EvaluatePerimeterPiece(BasePiece):
         return gdf
 
     def extract_start_time_from_txt(self, unzip_dir: str):
-        """Prehlada textove vystupy Farsitu (napr. Timings.txt) pre cas zaciatku."""
+        """Prehlada textove vystupy Farsitu pre cas zaciatku v novom formate."""
         month, day, hour = 8, 1, 0  # Fallback
         
         txt_files = glob.glob(os.path.join(unzip_dir, "*.txt"))
@@ -38,20 +38,38 @@ class EvaluatePerimeterPiece(BasePiece):
                 with open(txt_file, 'r', encoding='utf-8', errors='ignore') as f:
                     content = f.read().lower()
                     
+                    # 1. Prioritny format: "Farsite Start Time: 08 01 0000"
+                    bench_match = re.search(r'farsite start time:\s*(\d+)\s+(\d+)\s+(\d+)', content)
+                    if bench_match:
+                        month = int(bench_match.group(1))
+                        day = int(bench_match.group(2))
+                        hour = int(bench_match.group(3))
+                        self.logger.info(f"Uspesne nacitany cas z Benchmark formatu v {os.path.basename(txt_file)}")
+                        return month, day, hour
+
+                    # 2. Alternativny format: "Simulation Started: 8/1 0:00"
+                    sim_match = re.search(r'simulation started:\s*(\d+)/(\d+)\s+(\d+):(\d+)', content)
+                    if sim_match:
+                        month = int(sim_match.group(1))
+                        day = int(sim_match.group(2))
+                        hour = int(sim_match.group(3)) * 100
+                        self.logger.info(f"Uspesne nacitany cas zo Simulation formatu v {os.path.basename(txt_file)}")
+                        return month, day, hour
+
+                    # 3. Povodny fallback format
                     m_match = re.search(r'startmonth\s*[:=]?\s*(\d+)', content)
                     d_match = re.search(r'startday\s*[:=]?\s*(\d+)', content)
                     h_match = re.search(r'starthour\s*[:=]?\s*(\d+)', content)
                     
                     if m_match and d_match and h_match:
                         month = int(m_match.group(1))
-                        day = int(d_match.group(1))
-                        hour = int(h_match.group(1))
-                        self.logger.info(f"Uspesne nacitany cas zo suboru {os.path.basename(txt_file)}")
+                        day = int(d_match.group(2))
+                        hour = int(h_match.group(3))
                         return month, day, hour
             except Exception:
                 pass
                 
-        self.logger.warning("V .txt suboroch (Timings atd.) sa nenasiel cas startu. Pouzivam fallback 01.08. 00:00.")
+        self.logger.warning("V .txt suboroch sa nenasiel cas startu. Pouzivam fallback 01.08. 00:00.")
         return month, day, hour
 
     def piece_function(self, input_data: InputModel):
@@ -152,5 +170,6 @@ class EvaluatePerimeterPiece(BasePiece):
             self.logger.error(f"Chyba pri odosielani na API: {e}")
 
         self.display_result = {"file_type": "csv", "file_path": csv_path}
+
 
         return OutputModel(csv_report_path=csv_path, alert_status=status)
