@@ -39,7 +39,6 @@ class ExecuteFarsitePiece(BasePiece):
         return os.path.join(dst_dir, shp.name)
 
     def piece_function(self, input_data: InputModel):
-        # TOTO JE KLÚČOVÁ ZMENA: Pracujeme priamo v pridelenej zložke na Shared Storage
         work_root = self.results_path 
         in_dir = os.path.join(work_root, "in")
         out_dir = os.path.join(work_root, "out")
@@ -87,7 +86,6 @@ class ExecuteFarsitePiece(BasePiece):
         runner_log = f"{output_base}_runner.log"
         runner_log_path = runner_log if os.path.exists(runner_log) else fallback_log
 
-        # Log si ponecháme aj vo výpise Airflow pre rýchlu kontrolu
         self.logger.info("=== FARSITE LOG VYPIS ===")
         if os.path.exists(runner_log_path):
             with open(runner_log_path, 'r', encoding='utf-8') as log_file:
@@ -110,7 +108,7 @@ class ExecuteFarsitePiece(BasePiece):
 
         self.logger.info("Outputs uspesne ulozene na Shared Storage do: %s", zip_path)
 
-        # (Voliteľné) Vytvorenie odkazu, aby sa dal zip stiahnuť priamo z GUI Domina
+        # Vytvorenie odkazu, aby sa dal zip stiahnuť priamo z GUI Domina
         self.display_result = {
             "file_type": "zip",
             "file_path": zip_path
@@ -120,3 +118,4 @@ class ExecuteFarsitePiece(BasePiece):
             outputs_zip_path=zip_path,
             runner_log_path=runner_log_path,
         )
+
