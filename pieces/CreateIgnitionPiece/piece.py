@@ -1,5 +1,6 @@
 import os
 import fiona
+import rasterio
 from pyproj import Transformer
 from domino.base_piece import BasePiece
 from .models import InputModel, OutputModel
@@ -41,7 +42,30 @@ class CreateIgnitionPiece(BasePiece):
         except Exception as e:
             raise RuntimeError(f"Chyba pri transformacii suradníc: {e}")
 
-        # 4. Zapis do Shapefile (metricky system 5514)
+        # 4. KONTROLA HRANIC LCP
+        self.logger.info(f"Kontrolujem, ci bod lezi vnutri mapy: {os.path.basename(input_data.lcp_path)}")
+        try:
+            with rasterio.open(input_data.lcp_path) as dataset:
+                bounds = dataset.bounds # Vrati (left, bottom, right, top)
+                
+                # Nachadzaju sa suradnice vo vnutri obdlznika mapy
+                is_inside = (bounds.left <= x_krovak <= bounds.right) and \
+                            (bounds.bottom <= y_krovak <= bounds.top)
+                
+                if not is_inside:
+                    self.logger.error(f"Bod X:{x_krovak:.2f}, Y:{y_krovak:.2f} je mimo LCP!")
+                    self.logger.error(f"Hranice mapy - Lavy: {bounds.left:.2f}, Pravy: {bounds.right:.2f}, Spodny: {bounds.bottom:.2f}, Vrchny: {bounds.top:.2f}")
+                    raise ValueError(f"GPS bod ({lat}, {lon}) je mimo uzemia vasho LCP modelu. Workflow sa zastavuje.")
+                
+                self.logger.info("Vyborne, bod lezi spravne vnutri LCP mapy.")
+        except Exception as e:
+            # Ak to bola chyba "mimo mapu" - posun vyssie aby krabicka zlyhala
+            if isinstance(e, ValueError):
+                raise e
+            else:
+                self.logger.warning(f"Nepodarilo sa overit hranice LCP (zla cesta alebo format). Pokracujem bez kontroly. Chyba: {e}")
+
+        # 5. Zapis do Shapefile (metricky system 5514)
         schema = {'geometry': 'Point', 'properties': {'id': 'int:10'}}
 
         try:
@@ -63,4 +87,5 @@ class CreateIgnitionPiece(BasePiece):
             raise RuntimeError(f"Zlyhal zapis do shapefile suboru: {e}")
 
         return OutputModel(ignition_shp_path=output_filename)
+
 
