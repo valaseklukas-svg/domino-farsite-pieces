@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "type": "piece",
   "dependency": {
-      "dockerfile": "Dockerfile_1"
+      "requirements_file": "requirements_ignition.txt"
   },
   "categories": ["Data Preparation", "GIS"],
   "tags": ["shapefile", "gps", "farsite"],
@@ -13,4 +13,5 @@
     "icon_class_name": "fa-solid:location-dot"
   }
 }
+
 
