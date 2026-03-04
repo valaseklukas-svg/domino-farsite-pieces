@@ -2,10 +2,12 @@ import os
 import glob
 import re
 import zipfile
+import shutil
 import requests
 import warnings
 import pandas as pd
 import geopandas as gpd
+import folium
 from datetime import datetime, timedelta
 
 from domino.base_piece import BasePiece
@@ -29,6 +31,7 @@ class EvaluatePerimeterPiece(BasePiece):
 
     def extract_start_time_from_txt(self, unzip_dir: str):
         """Prehlada textove vystupy Farsitu pre cas zaciatku v novom formate."""
+        # ... (tato funkcia ostava uplne bez zmeny, nebudem ju tu vypisovat celu, aby to nebolo dlhe) ...
         month, day, hour = 8, 1, 0  # Fallback
         
         txt_files = glob.glob(os.path.join(unzip_dir, "*.txt"))
@@ -38,33 +41,24 @@ class EvaluatePerimeterPiece(BasePiece):
                 with open(txt_file, 'r', encoding='utf-8', errors='ignore') as f:
                     content = f.read().lower()
                     
-                    # 1. Prioritny format: "Farsite Start Time: 08 01 0000"
                     bench_match = re.search(r'farsite start time:\s*(\d+)\s+(\d+)\s+(\d+)', content)
                     if bench_match:
-                        month = int(bench_match.group(1))
-                        day = int(bench_match.group(2))
-                        hour = int(bench_match.group(3))
+                        month, day, hour = int(bench_match.group(1)), int(bench_match.group(2)), int(bench_match.group(3))
                         self.logger.info(f"Uspesne nacitany cas z Benchmark formatu v {os.path.basename(txt_file)}")
                         return month, day, hour
 
-                    # 2. Alternativny format: "Simulation Started: 8/1 0:00"
                     sim_match = re.search(r'simulation started:\s*(\d+)/(\d+)\s+(\d+):(\d+)', content)
                     if sim_match:
-                        month = int(sim_match.group(1))
-                        day = int(sim_match.group(2))
-                        hour = int(sim_match.group(3)) * 100
+                        month, day, hour = int(sim_match.group(1)), int(sim_match.group(2)), int(sim_match.group(3)) * 100
                         self.logger.info(f"Uspesne nacitany cas zo Simulation formatu v {os.path.basename(txt_file)}")
                         return month, day, hour
 
-                    # 3. Povodny fallback format
                     m_match = re.search(r'startmonth\s*[:=]?\s*(\d+)', content)
                     d_match = re.search(r'startday\s*[:=]?\s*(\d+)', content)
                     h_match = re.search(r'starthour\s*[:=]?\s*(\d+)', content)
                     
                     if m_match and d_match and h_match:
-                        month = int(m_match.group(1))
-                        day = int(d_match.group(2))
-                        hour = int(h_match.group(3))
+                        month, day, hour = int(m_match.group(1)), int(d_match.group(2)), int(h_match.group(3))
                         return month, day, hour
             except Exception:
                 pass
@@ -84,7 +78,6 @@ class EvaluatePerimeterPiece(BasePiece):
         with zipfile.ZipFile(input_data.outputs_zip_path, 'r') as zip_ref:
             zip_ref.extractall(unzip_dir)
             
-        # Najdenie Shapefile Perimetrov
         perimeters_files = glob.glob(os.path.join(unzip_dir, "*Perimeters.shp"))
         if not perimeters_files:
             raise FileNotFoundError("V ZIPe sa nenasiel subor *Perimeters.shp!")
@@ -92,8 +85,7 @@ class EvaluatePerimeterPiece(BasePiece):
 
         # --- 2. Ziskanie startovacieho casu priamo z vystupov ---
         s_month, s_day, s_hour = self.extract_start_time_from_txt(unzip_dir)
-        h_val = s_hour // 100
-        m_val = s_hour % 100
+        h_val, m_val = s_hour // 100, s_hour % 100
         FIXED_YEAR = 2024
         dt_start = datetime(FIXED_YEAR, s_month, s_day, h_val, m_val)
         self.logger.info(f"Zaciatok simulacie nastaveny na: {dt_start.strftime('%d.%m. %H:%M')}")
@@ -104,7 +96,6 @@ class EvaluatePerimeterPiece(BasePiece):
         lines_gdf = gpd.read_file(lineshape_path)
         ign_gdf = gpd.read_file(input_data.ignition_shp_path)
 
-        # Zjednotenie CRS
         target_crs = buffer_gdf.crs
         lines_gdf = self.zjednot_crs(lines_gdf, target_crs)
         ign_gdf = self.zjednot_crs(ign_gdf, target_crs)
@@ -132,10 +123,7 @@ class EvaluatePerimeterPiece(BasePiece):
         for idx, row in lines_gdf.iterrows():
             if row.geometry.intersects(buffer_geom):
                 if found_time_cols:
-                    m = int(row[col_map[month_key]])
-                    d = int(row[col_map[day_key]])
-                    h_raw = int(row[col_map[hour_key]])
-                    
+                    m, d, h_raw = int(row[col_map[month_key]]), int(row[col_map[day_key]]), int(row[col_map[hour_key]])
                     vysledok['CAS_RAW'] = f"{m}/{d}/{h_raw}"
                     dt_current = datetime(FIXED_YEAR, m, d) + timedelta(hours=h_raw//100, minutes=h_raw%100)
                     delta = dt_current - dt_start
@@ -150,8 +138,7 @@ class EvaluatePerimeterPiece(BasePiece):
         hours = vysledok['HODINY_OD_STARTU']
         
         if vysledok['ZDROJ_V_BUFFRI']:
-            status = "critical"
-            self.logger.warning("Ignition je v buffri!")
+            status, self.logger.warning("Ignition je v buffri!") = "critical", None
         elif prienik_nasiel and hours is not None:
             if hours < 12: status = "critical"
             elif 12 <= hours <= 48: status = "warning"
@@ -169,7 +156,62 @@ class EvaluatePerimeterPiece(BasePiece):
         except Exception as e:
             self.logger.error(f"Chyba pri odosielani na API: {e}")
 
-        self.display_result = {"file_type": "csv", "file_path": csv_path}
+        # --- 7. Tvorba mapy (Folium) ---
+        self.logger.info("Generujem interaktivnu mapu s vysledkami...")
+        ign_wgs84 = ign_gdf.to_crs("EPSG:4326") if not ign_gdf.empty else gpd.GeoDataFrame()
+        buffer_wgs84 = buffer_gdf.to_crs("EPSG:4326") if not buffer_gdf.empty else gpd.GeoDataFrame()
+        lines_wgs84 = lines_gdf.to_crs("EPSG:4326") if not lines_gdf.empty else gpd.GeoDataFrame()
+        
+        if not buffer_wgs84.empty:
+            centroid = buffer_wgs84.geometry.unary_union.centroid
+            center_lat, center_lon = centroid.y, centroid.x
+        else:
+            center_lat, center_lon = 48.6690, 19.6990 # Stred SR ako fallback
+            
+        m = folium.Map(location=[center_lat, center_lon], zoom_start=13, control_scale=True)
+        
+        # Pridanie satelitneho podkladu (Esri World Imagery)
+        folium.TileLayer(
+            tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+            attr='Esri',
+            name='Satelitna mapa',
+            overlay=False,
+            control=True
+        ).add_to(m)
+        
+        if not buffer_wgs84.empty:
+            folium.GeoJson(buffer_wgs84, name="Ochranny Buffer", style_function=lambda x: {'fillColor': '#3388ff', 'color': '#3388ff', 'weight': 2, 'fillOpacity': 0.2}).add_to(m)
+            
+        if not lines_wgs84.empty:
+            folium.GeoJson(lines_wgs84, name="Perimetre poziaru", style_function=lambda x: {'color': '#ff3333', 'weight': 2}).add_to(m)
+            
+        if not ign_wgs84.empty:
+            folium.Marker(location=[ign_wgs84.geometry.iloc[0].y, ign_wgs84.geometry.iloc[0].x], popup="Ohnisko (Ignition)", icon=folium.Icon(color='red', icon='fire')).add_to(m)
+            
+        folium.LayerControl().add_to(m)
+        map_path = os.path.join(output_dir, "mapa_vysledkov.html")
+        m.save(map_path)
 
+        # --- 8. Zabalenie do finalneho ZIPu ---
+        self.logger.info("Zabalujem vysledky do ZIP archivu...")
+        final_zip_dir = os.path.join(output_dir, "final_results")
+        os.makedirs(final_zip_dir, exist_ok=True)
+        
+        shutil.copy2(csv_path, final_zip_dir)
+        shutil.copy2(map_path, final_zip_dir)
+        
+        # Skopirujeme aj povodne shapefily perimetrov
+        for f in glob.glob(os.path.join(unzip_dir, "*Perimeters.*")):
+            shutil.copy2(f, final_zip_dir)
 
-        return OutputModel(csv_report_path=csv_path, alert_status=status)
+        zip_base = os.path.join(output_dir, "Dicris_Farsite_Vysledky")
+        final_zip_path = shutil.make_archive(zip_base, "zip", final_zip_dir)
+
+        # Zobrazi sa mapa v UI
+        self.display_result = {"file_type": "html", "file_path": map_path}
+
+        return OutputModel(
+            csv_report_path=csv_path, 
+            alert_status=status,
+            final_results_zip=final_zip_path
+        )
