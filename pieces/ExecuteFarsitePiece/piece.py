@@ -86,23 +86,14 @@ class ExecuteFarsitePiece(BasePiece):
         runner_log = f"{output_base}_runner.log"
         runner_log_path = runner_log if os.path.exists(runner_log) else fallback_log
 
-        # PRECITANIE LOGOV A KONTROLA CHYB
-        farsite_log_content = ""
         self.logger.info("=== FARSITE LOG VYPIS ===")
         if os.path.exists(runner_log_path):
             with open(runner_log_path, 'r', encoding='utf-8') as log_file:
-                farsite_log_content = log_file.read()
-                self.logger.info("\n" + farsite_log_content)
+                self.logger.info("\n" + log_file.read())
         else:
             self.logger.warning("Log subor sa nenasiel!")
         self.logger.info("==========================")
 
-        # 1. KONTROLA NA NO IGNITION
-        if "No ignition" in farsite_log_content:
-            self.logger.error("KRITICKA CHYBA: FARSITE nenasiel bod zalahnutia. Skontroluj, ci zadane GPS suradnice naozaj patria do uzemia tvojho LCP modelu.")
-            raise RuntimeError("ZLYHANIE: FARSITE nenasiel 'ignition'. Zadane GPS suradnice su pravdepodobne mimo mapy.")
-
-        # 2. KONTROLA NA INE CHYBY
         if proc.returncode != 0:
             self.logger.error("FARSITE failed. Return code=%s", proc.returncode)
             self.logger.error("See logs: %s and %s", runner_log, fallback_log)
@@ -117,7 +108,7 @@ class ExecuteFarsitePiece(BasePiece):
 
         self.logger.info("Outputs uspesne ulozene na Shared Storage do: %s", zip_path)
 
-        # Vytvorenie odkazu, aby sa dal zip stiahnuT priamo z GUI Domina
+        # Vytvorenie odkazu, aby sa dal zip stiahnuť priamo z GUI Domina
         self.display_result = {
             "file_type": "zip",
             "file_path": zip_path
