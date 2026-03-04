@@ -163,18 +163,18 @@
                     "type": "string"
                 },
                 "ignition_shp_path": {
-                    "description": "Automaticke prepojenie: Cesta k ignition.shp z CreateIgnitionPiece.",
+                    "description": "Automaticke prepojenie: Cesta k ignition.shp.",
                     "title": "Ignition Shp Path",
                     "type": "string"
                 },
                 "buffer_shp_path": {
-                    "description": "MANUALNE ZADANIE: Cesta k buffer shapefile na disku (napr. /home/shared_storage/buffer.shp).",
+                    "description": "MANUALNE ZADANIE: Cesta k buffer shapefile na disku.",
                     "title": "Buffer Shp Path",
                     "type": "string"
                 },
                 "api_model_name": {
                     "default": "Model 1",
-                    "description": "MANUALNE ZADANIE: Nazov modelu pre API dicris.sk.",
+                    "description": "MANUALNE ZADANIE: Nazov modelu pre API.",
                     "title": "Api Model Name",
                     "type": "string"
                 }
@@ -195,14 +195,20 @@
                     "type": "string"
                 },
                 "alert_status": {
-                    "description": "Vysledny status odoslany na API (ok, moderate, warning, critical).",
+                    "description": "Vysledny status odoslany na API.",
                     "title": "Alert Status",
+                    "type": "string"
+                },
+                "final_results_zip": {
+                    "description": "Kompletny ZIP balicek s mapou, CSV a perimetrami na stiahnutie.",
+                    "title": "Final Results Zip",
                     "type": "string"
                 }
             },
             "required": [
                 "csv_report_path",
-                "alert_status"
+                "alert_status",
+                "final_results_zip"
             ],
             "title": "OutputModel",
             "type": "object"
