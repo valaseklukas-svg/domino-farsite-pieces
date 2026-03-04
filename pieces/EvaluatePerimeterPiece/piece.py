@@ -157,8 +157,21 @@ class EvaluatePerimeterPiece(BasePiece):
         except Exception as e:
             self.logger.error(f"Chyba pri odosielani na API: {e}")
 
-        # --- 7. Tvorba mapy (Folium) ---
-        self.logger.info("Generujem interaktivnu mapu s vysledkami...")
+        # --- 7. Zabalenie do finalneho ZIPu (bez HTML mapy) ---
+        self.logger.info("Zabalujem vysledky do ZIP archivu...")
+        final_zip_dir = os.path.join(output_dir, "final_results")
+        os.makedirs(final_zip_dir, exist_ok=True)
+        
+        shutil.copy2(csv_path, final_zip_dir)
+        # Copy povodne shapefily perimetrov
+        for f in glob.glob(os.path.join(unzip_dir, "*Perimeters.*")):
+            shutil.copy2(f, final_zip_dir)
+
+        zip_base = os.path.join(output_dir, "Dicris_Farsite_Vysledky")
+        final_zip_path = shutil.make_archive(zip_base, "zip", final_zip_dir)
+
+        # --- 8. Tvorba mapy (Folium) a vlozenie tlacidla na stiahnutie ---
+        self.logger.info("Generujem interaktivnu mapu s vysledkami a tlacidlom...")
         ign_wgs84 = ign_gdf.to_crs("EPSG:4326") if not ign_gdf.empty else gpd.GeoDataFrame()
         buffer_wgs84 = buffer_gdf.to_crs("EPSG:4326") if not buffer_gdf.empty else gpd.GeoDataFrame()
         lines_wgs84 = lines_gdf.to_crs("EPSG:4326") if not lines_gdf.empty else gpd.GeoDataFrame()
@@ -167,11 +180,10 @@ class EvaluatePerimeterPiece(BasePiece):
             centroid = buffer_wgs84.geometry.unary_union.centroid
             center_lat, center_lon = centroid.y, centroid.x
         else:
-            center_lat, center_lon = 48.6690, 19.6990 # Stred SR ako fallback
+            center_lat, center_lon = 48.6690, 19.6990 
             
-        m = folium.Map(location=[center_lat, center_lon], zoom_start=13, control_scale=True)
+        m = folium.Map(location=[center_lat, center_lon], zoom_start=14, control_scale=True)
         
-        # Pridanie satelitneho podkladu (Esri World Imagery)
         folium.TileLayer(
             tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
             attr='Esri',
@@ -190,23 +202,24 @@ class EvaluatePerimeterPiece(BasePiece):
             folium.Marker(location=[ign_wgs84.geometry.iloc[0].y, ign_wgs84.geometry.iloc[0].x], popup="Ohnisko (Ignition)", icon=folium.Icon(color='red', icon='fire')).add_to(m)
             
         folium.LayerControl().add_to(m)
+
+        # --- VLOZENIE ZIPU DO MAPY AKO TLACIDLO ---
+        with open(final_zip_path, "rb") as f:
+            b64_zip = base64.b64encode(f.read()).decode('utf-8')
+            
+        btn_html = f'''
+        <div style="position: fixed; bottom: 30px; left: 30px; z-index: 9999;">
+            <a href="data:application/zip;base64,{b64_zip}" download="Dicris_Farsite_Vysledky.zip"
+               style="background-color: #28a745; color: white; padding: 12px 24px; border-radius: 5px; text-decoration: none; font-weight: bold; font-family: sans-serif; box-shadow: 2px 2px 6px rgba(0,0,0,0.4); border: 2px solid white;">
+               📥 Stiahnuť GIS dáta (ZIP)
+            </a>
+        </div>
+        '''
+        m.get_root().html.add_child(folium.Element(btn_html))
+        # ------------------------------------------
+
         map_path = os.path.join(output_dir, "mapa_vysledkov.html")
         m.save(map_path)
-
-        # --- 8. Zabalenie do finalneho ZIPu ---
-        self.logger.info("Zabalujem vysledky do ZIP archivu...")
-        final_zip_dir = os.path.join(output_dir, "final_results")
-        os.makedirs(final_zip_dir, exist_ok=True)
-        
-        shutil.copy2(csv_path, final_zip_dir)
-        shutil.copy2(map_path, final_zip_dir)
-        
-        # Skopirujeme aj povodne shapefily perimetrov
-        for f in glob.glob(os.path.join(unzip_dir, "*Perimeters.*")):
-            shutil.copy2(f, final_zip_dir)
-
-        zip_base = os.path.join(output_dir, "Dicris_Farsite_Vysledky")
-        final_zip_path = shutil.make_archive(zip_base, "zip", final_zip_dir)
 
         # Zobrazi sa mapa v UI
         self.display_result = {"file_type": "html", "file_path": map_path}
@@ -216,4 +229,3 @@ class EvaluatePerimeterPiece(BasePiece):
             alert_status=status,
             final_results_zip=final_zip_path
         )
-
