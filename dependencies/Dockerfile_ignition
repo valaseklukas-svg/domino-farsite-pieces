@@ -1,0 +1,17 @@
+FROM ghcr.io/iisas/domino-base-piece:latest
+
+# --- Instalacia chybajucej systemovej kniznice pre fiona/gdal ---
+RUN apt-get update && apt-get install -y libexpat1
+# ---
+
+RUN pip install --no-cache-dir domino-py-iisas
+
+# --- Instalacia GIS Python balickov ---
+COPY dependencies/requirements_ignition.txt /tmp/requirements_ignition.txt
+RUN pip install --no-cache-dir -r /tmp/requirements_ignition.txt
+# ---
+
+# Standardne prekopirovanie suborov pre Domino
+COPY config.toml domino/pieces_repository/
+COPY pieces domino/pieces_repository/pieces
+COPY .domino domino/pieces_repository/.domino
