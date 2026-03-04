@@ -168,7 +168,7 @@
                     "type": "string"
                 },
                 "buffer_shp_path": {
-                    "description": "MANUALNE ZADANIE: Cesta k buffer shapefile na disku (napr. /home/shared_storage/Buffer_50m.shp).",
+                    "description": "MANUALNE ZADANIE: Cesta k buffer shapefile na disku (napr. /home/shared_storage/buffer.shp).",
                     "title": "Buffer Shp Path",
                     "type": "string"
                 },
@@ -243,12 +243,20 @@
         "input_schema": {
             "properties": {
                 "gps_text": {
-                    "default": "49.06565617666292, 18.49023988036085",
+                    "default": "49.066, 18.490",
                     "description": "Vloz GPS suradnice z Google Maps (napr. 48.184, 17.073).",
                     "title": "Gps Text",
                     "type": "string"
+                },
+                "lcp_path": {
+                    "description": "Cesta k .lcp suboru na disku pre kontrolu hranic uzemia (napr. /home/shared_storage/.../final.lcp).",
+                    "title": "Lcp Path",
+                    "type": "string"
                 }
             },
+            "required": [
+                "lcp_path"
+            ],
             "title": "InputModel",
             "type": "object"
         },
