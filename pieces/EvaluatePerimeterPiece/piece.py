@@ -162,14 +162,32 @@ class EvaluatePerimeterPiece(BasePiece):
         # --- 6. Ulozenie CSV a odoslanie API ---
         csv_path = os.path.join(output_dir, "vyhodnotenie_perimetra.csv")
         pd.DataFrame([vysledok]).to_csv(csv_path, index=False, sep=';')
+
         
+        # Testovacie posunutie casu o +1 hodinu
+        posunuty_cas = (datetime.now() + timedelta(hours=1)).isoformat()
+        
+        payload = {
+            "name": input_data.api_model_name,
+            "status": status,
+            "timestamp": posunuty_cas,  # Testovaci parameter 1
+            "time": posunuty_cas        # Testovaci parameter 2
+        }
+
         try:
-            requests.post("https://dicris.sk:8000/models", json={"name": input_data.api_model_name, "status": status}, verify=False, timeout=10)
-            self.logger.info("API request uspesne odoslany.")
+            self.logger.info(f"Odosielam request na API dicris.sk s payloadom: {payload}")
+            response = requests.post("https://dicris.sk:8000/models", json=payload, verify=False, timeout=10)
+            
+            # Vypiseme status kod, aby sme vedeli ci nas API zablokovalo (422) alebo prijalo (201)
+            self.logger.info(f"Odpoved API servera (status code): {response.status_code}")
+            
+            # Ak API vrati chybu (napr 422), vypise to detaily
+            if response.status_code != 201:
+                self.logger.warning(f"Detaily odpovede API: {response.text}")
+                
         except Exception as e:
             self.logger.error(f"Chyba pri odosielani na API: {e}")
 
         self.display_result = {"file_type": "csv", "file_path": csv_path}
-
 
         return OutputModel(csv_report_path=csv_path, alert_status=status)
