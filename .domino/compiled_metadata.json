@@ -171,12 +171,6 @@
                     "description": "MANUALNE ZADANIE: Cesta k buffer shapefile na disku.",
                     "title": "Buffer Shp Path",
                     "type": "string"
-                },
-                "api_model_name": {
-                    "default": "Model 1",
-                    "description": "MANUALNE ZADANIE: Nazov modelu pre API.",
-                    "title": "Api Model Name",
-                    "type": "string"
                 }
             },
             "required": [
