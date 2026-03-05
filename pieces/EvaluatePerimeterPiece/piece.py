@@ -165,8 +165,14 @@ class EvaluatePerimeterPiece(BasePiece):
         
         shutil.copy2(csv_path, final_zip_dir)
         # Copy povodne shapefily perimetrov
-        for f in glob.glob(os.path.join(unzip_dir, "*Perimeters.*")):
-            shutil.copy2(f, final_zip_dir)
+        #for f in glob.glob(os.path.join(unzip_dir, "*Perimeters.*")):
+        #    shutil.copy2(f, final_zip_dir)
+
+        # Copy vsetky subory z FARSITE
+        for f in os.listdir(unzip_dir):
+            full_path = os.path.join(unzip_dir, f)
+            if os.path.isfile(full_path):
+                shutil.copy2(full_path, final_zip_dir)
 
         zip_base = os.path.join(output_dir, "Dicris_Farsite_Vysledky")
         final_zip_path = shutil.make_archive(zip_base, "zip", final_zip_dir)
@@ -212,7 +218,7 @@ class EvaluatePerimeterPiece(BasePiece):
         <div style="position: fixed; bottom: 30px; left: 30px; z-index: 9999;">
             <a href="data:application/zip;base64,{b64_zip}" download="Dicris_Farsite_Vysledky.zip"
                style="background-color: #28a745; color: white; padding: 12px 24px; border-radius: 5px; text-decoration: none; font-weight: bold; font-family: sans-serif; box-shadow: 2px 2px 6px rgba(0,0,0,0.4); border: 2px solid white;">
-               📥 Stiahnuť GIS dáta (ZIP)
+               Download data (ZIP)
             </a>
         </div>
         '''
@@ -230,4 +236,5 @@ class EvaluatePerimeterPiece(BasePiece):
             alert_status=status,
             final_results_zip=final_zip_path
         )
+
 
