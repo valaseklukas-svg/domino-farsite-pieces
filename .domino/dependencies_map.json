@@ -8,7 +8,7 @@
             "ExecuteFarsitePiece"
         ],
         "secrets": [],
-        "source_image": "ghcr.io/valaseklukas-svg/domino-farsite-pieces:0.1.41-group0"
+        "source_image": "ghcr.io/valaseklukas-svg/domino-farsite-pieces:0.1.42-group0"
     },
     "group1": {
         "dependency": {
@@ -19,7 +19,7 @@
             "EvaluatePerimeterPiece"
         ],
         "secrets": [],
-        "source_image": "ghcr.io/valaseklukas-svg/domino-farsite-pieces:0.1.41-group1"
+        "source_image": "ghcr.io/valaseklukas-svg/domino-farsite-pieces:0.1.42-group1"
     },
     "group2": {
         "dependency": {
@@ -30,6 +30,6 @@
             "CreateIgnitionPiece"
         ],
         "secrets": [],
-        "source_image": "ghcr.io/valaseklukas-svg/domino-farsite-pieces:0.1.41-group2"
+        "source_image": "ghcr.io/valaseklukas-svg/domino-farsite-pieces:0.1.42-group2"
     }
 }
