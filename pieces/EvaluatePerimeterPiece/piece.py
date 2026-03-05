@@ -8,6 +8,7 @@ import warnings
 import pandas as pd
 import geopandas as gpd
 import folium
+import base64
 from datetime import datetime, timedelta
 
 from domino.base_piece import BasePiece
@@ -229,3 +230,4 @@ class EvaluatePerimeterPiece(BasePiece):
             alert_status=status,
             final_results_zip=final_zip_path
         )
+
