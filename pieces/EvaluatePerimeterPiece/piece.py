@@ -142,8 +142,8 @@ class EvaluatePerimeterPiece(BasePiece):
             status = "critical"
             self.logger.warning("Ignition je v buffri!")
         elif prienik_nasiel and hours is not None:
-            if hours < 12: status = "critical"
-            elif 12 <= hours <= 48: status = "warning"
+            if hours < 6: status = "critical"
+            elif 6 <= hours <= 12: status = "warning"
             else: status = "moderate"
         
         self.logger.info(f"==> STATUS: {status.upper()} <==")
@@ -236,6 +236,7 @@ class EvaluatePerimeterPiece(BasePiece):
             alert_status=status,
             final_results_zip=final_zip_path
         )
+
 
 
 
