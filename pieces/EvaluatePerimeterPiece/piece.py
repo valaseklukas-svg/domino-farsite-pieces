@@ -148,7 +148,8 @@ class EvaluatePerimeterPiece(BasePiece):
                 status = "warning"
             elif hours <= 12: 
                 status = "moderate"
-            else: status = "ok"        
+            else: 
+                status = "ok"        
         
         self.logger.info(f"==> STATUS: {status.upper()} <==")
 
@@ -240,6 +241,7 @@ class EvaluatePerimeterPiece(BasePiece):
             alert_status=status,
             final_results_zip=final_zip_path
         )
+
 
 
 
