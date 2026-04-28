@@ -158,7 +158,7 @@ class EvaluatePerimeterPiece(BasePiece):
         pd.DataFrame([vysledok]).to_csv(csv_path, index=False, sep=';')
         
         try:
-            requests.post("https://dicris.sk:8000/models", json={"name": "Fire", "status": status}, verify=False, timeout=10)
+            requests.post("https://dicris.sk:8000/models", json={"name": "D6_Fire-Predictor", "status": status}, verify=False, timeout=10)
             self.logger.info("API request uspesne odoslany.")
         except Exception as e:
             self.logger.error(f"Chyba pri odosielani na API: {e}")
